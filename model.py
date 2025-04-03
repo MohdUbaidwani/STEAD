@@ -97,20 +97,20 @@ class Model(nn.Module):
         
     def forward(self, x):
 
-        x = x.permute(0, 2, 3, 4, 1)
+        x = x.permute(0, 2, 3, 4, 1)#1,192,16,10,10
 
         if x.shape[4] != self.init_dim:
-            x = self.linear(self.norm0(x))
+            x = self.linear(self.norm0(x))#1,16,10,10,32
 
         for stage in self.stages:
-            x = stage(x)
+            x = stage(x)#1,16,10,10,32
 
         
-        x = x.permute(0, 4, 1, 2, 3)
-        x = self.pooling(x).squeeze()
+        x = x.permute(0, 4, 1, 2, 3)#1,32,16,10,10
+        x = self.pooling(x).squeeze()#1,32,1,1,1-->32
 
         
         x = self.drop_out(x)
-        x = self.norm(x)
+        x = self.norm(x)#32
         logits = self.fc(x)
-        return logits, x
+        return logits, x#[1],[32]  -1 to 1 
